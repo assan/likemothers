@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Оформление заказа</h1>
+<form method="post">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label>Имя</label><input type="text" name="first_name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Фамилия</label><input type="text" name="last_name" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Email</label><input type="email" name="email" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Телефон</label><input type="tel" name="phone" class="form-control" required>
+    </div>
+    <div class="mb-3">
+        <label>Адрес (район Алматы)</label><input type="text" name="address" class="form-control" required placeholder="Напр: Центр, ул. Абая">
+    </div>
+    <div class="mb-3">
+        <label>Время доставки</label><input type="text" name="delivery_time" class="form-control" placeholder="Напр: Сегодня 18:00">
+    </div>
+    <div class="mb-3">
+        <label>Комментарий</label><textarea name="comment" class="form-control"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success">Оплатить заказ</button>
+</form>
+<p class="mt-3">Доставка: рассчитывается автоматически по адресу (бесплатно от 1500 ₸ в центре)</p>
+{% endblock %}

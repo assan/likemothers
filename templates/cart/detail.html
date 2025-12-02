@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1>Корзина</h1>
+<table class="table">
+    <thead><tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Итого</th><th></th></tr></thead>
+    <tbody>
+        {% for item in cart %}
+        <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.price }} ₸</td>
+            <td>{{ item.qty }}</td>
+            <td>{{ item.total_price }} ₸</td>
+            <td><a href="{% url 'cart:remove' item.product.id %}" class="btn btn-danger btn-sm">Удалить</a></td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<p><strong>Итого: {{ cart.get_total_price }} ₸</strong></p>
+<a href="{% url 'orders:order_create' %}" class="btn btn-primary">Оформить заказ</a>
+{% endblock %}
