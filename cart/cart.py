@@ -10,13 +10,27 @@ class Cart:
         self.cart = cart
 
     def add(self, product, qty=1, update_qty=False):
+        """
+        Добавляем товар в корзину или обновляем его количество
+        """
         product_id = str(product.id)
+        qty = int(qty)  # ← принудительно превращаем в int
+
         if product_id not in self.cart:
-            self.cart[product_id] = {'qty': 0, 'price': str(product.price)}
+            self.cart[product_id] = {
+                'qty': 0,
+                'price': str(product.price),  # цена всегда строка в сессии
+            }
+
         if update_qty:
             self.cart[product_id]['qty'] = qty
         else:
             self.cart[product_id]['qty'] += qty
+
+        # Если количество стало 0 или меньше — удаляем товар из корзины
+        if self.cart[product_id]['qty'] <= 0:
+            del self.cart[product_id]
+
         self.save()
 
     def remove(self, product):
