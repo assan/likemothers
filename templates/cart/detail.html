@@ -1,20 +1,71 @@
+<!-- templates/cart/detail.html -->
 {% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Корзина{% endblock %}
+
 {% block content %}
-<h1>Корзина</h1>
-<table class="table">
-    <thead><tr><th>Товар</th><th>Цена</th><th>Кол-во</th><th>Итого</th><th></th></tr></thead>
-    <tbody>
-        {% for item in cart %}
-        <tr>
-            <td>{{ item.product.name }}</td>
-            <td>{{ item.price }} ₸</td>
-            <td>{{ item.qty }}</td>
-            <td>{{ item.total_price }} ₸</td>
-            <td><a href="{% url 'cart:remove' item.product.id %}" class="btn btn-danger btn-sm">Удалить</a></td>
-        </tr>
-        {% endfor %}
-    </tbody>
-</table>
-<p><strong>Итого: {{ cart.get_total_price }} ₸</strong></p>
-<a href="{% url 'orders:order_create' %}" class="btn btn-primary">Оформить заказ</a>
+<div class="container my-5">
+    <h1 class="mb-4">Ваша корзина</h1>
+
+    {% if cart|length == 0 %}
+        <div class="alert alert-info text-center">
+            Корзина пуста. <a href="{% url 'shop:product_list' %}">Перейти в каталог</a>
+        </div>
+    {% else %}
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>Товар</th>
+                        <th>Цена</th>
+                        <th>Количество</th>
+                        <th>Сумма</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in cart %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    {% if item.product.image %}
+                                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px; margin-right: 15px;">
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ item.product.name }}</strong><br>
+                                        <small class="text-muted">{{ item.product.weight }} г</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>{{ item.price }} ₸</td>
+                            <td>
+                                <!-- Форма с + и − -->
+                                <form action="{% url 'cart:add' item.product.id %}" method="post" class="d-inline">
+                                    {% csrf_token %}
+                                    <div class="input-group" style="width: 130px;">
+                                        <button type="submit" name="subtract" class="btn btn-outline-secondary btn-sm">-</button>
+                                        <input type="number" name="quantity" value="{{ item.qty }}" min="1" max="{{ item.product.stock }}" class="form-control text-center" readonly>
+                                        <button type="submit" name="add" class="btn btn-outline-success btn-sm">+</button>
+                                    </div>
+                                </form>
+                            </td>
+                            <td><strong>{{ item.total_price }} ₸</strong></td>
+                            <td>
+                                <a href="{% url 'cart:remove' item.product.id %}" class="btn btn-danger btn-sm">Удалить</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-end mt-4">
+            <h4>Итого: <strong>{{ cart.get_total_price }} ₸</strong></h4>
+            <a href="{% url 'orders:order_create' %}" class="btn btn-success btn-lg mt-3">
+                Оформить заказ →
+            </a>
+        </div>
+    {% endif %}
+</div>
 {% endblock %}

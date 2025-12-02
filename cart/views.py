@@ -11,13 +11,23 @@ def cart_add(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     qty = int(request.POST.get('quantity', 1))
 
-    if qty > product.stock:
-        messages.error(request, f"В наличии только {product.stock} порций этого товара!")
-        return redirect('shop:product_list')   # ← безопасный редирект
+    # Обработка кнопок + и −
+    if 'add' in request.POST:
+        qty = cart.cart.get(str(product.id), {}).get('qty', 0) + 1
+    elif 'subtract' in request.POST:
+        qty = cart.cart.get(str(product.id), {}).get('qty', 0) - 1
+        if qty <= 0:
+            cart.remove(product)
+            messages.success(request, f"{product.name} удалён из корзины")
+            return redirect('cart:cart_detail')
 
-    cart.add(product=product, qty=qty)
-    messages.success(request, f"Добавлено {qty} × {product.name}")
-    return redirect('cart:cart_detail')        # ← теперь точно работает
+    if qty > product.stock:
+        messages.error(request, f"В наличии только {product.stock} порций!")
+        return redirect('cart:cart_detail')
+
+    cart.add(product=product, qty=qty, update_qty=True)
+    messages.success(request, f"Количество обновлено")
+    return redirect('cart:cart_detail')
 
 def cart_remove(request, product_id):
     cart = Cart(request)
